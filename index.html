@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkInBio Hub & Hosting Portal</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .glass-button {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-button:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .glass-input {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: #a855f7;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    .glow-effect {
+      animation: pulseGlow 5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 relative overflow-x-hidden bg-slate-950 flex flex-col items-center justify-start p-4 sm:p-6 md:p-8">
+
+  <!-- Dynamic Wallpaper Background Layer -->
+  <div id="bg-wallpaper" class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 ease-in-out scale-105" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');"></div>
+  <div id="bg-overlay" class="fixed inset-0 z-0 bg-slate-950/70 backdrop-blur-[2px] transition-all duration-500"></div>
+
+  <!-- Ambient Glow Orbs -->
+  <div class="fixed top-1/4 -left-20 w-80 h-80 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none glow-effect z-0"></div>
+  <div class="fixed bottom-1/4 -right-20 w-80 h-80 bg-blue-600/30 rounded-full blur-[100px] pointer-events-none glow-effect z-0" style="animation-delay: 2.5s;"></div>
+
+  <main class="relative z-10 w-full max-w-md mx-auto my-auto flex flex-col items-center">
+    
+    <!-- Top Action Bar -->
+    <div id="top-bar" class="w-full flex justify-between items-center mb-4 px-1 gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="view-mode-indicator" class="text-xs font-semibold tracking-wider text-slate-300 uppercase">Live Preview</span>
+      </div>
+      
+      <div class="flex gap-2">
+        <button id="guide-btn" onclick="openDeployGuide()" class="glass-button px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 text-emerald-300 border-emerald-500/40">
+          <i data-lucide="globe" class="w-3.5 h-3.5"></i> How To Host
+        </button>
+        <button id="edit-toggle-btn" onclick="openAdminPanel()" class="glass-button px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 text-purple-300 border-purple-500/40">
+          <i data-lucide="settings" class="w-3.5 h-3.5"></i> Edit Profile
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Card Container -->
+    <div class="glass-card w-full rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center transition-all duration-300 relative">
+      
+      <!-- Profile Avatar -->
+      <div class="relative group mb-4">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+        <img id="display-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" alt="Avatar" class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-2 border-white/20 shadow-xl" />
+        <span id="verified-badge" class="absolute bottom-1 right-1 bg-purple-600 text-white p-1.5 rounded-full shadow-lg border border-white/20" title="Verified Creator">
+          <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+        </span>
+      </div>
+
+      <!-- Profile Name & Handle -->
+      <h1 id="display-name" class="text-2xl font-bold text-white tracking-tight drop-shadow-sm mb-1">Alex Vance</h1>
+      <p id="display-handle" class="text-xs font-medium text-purple-300 tracking-wide mb-3">@alexvance_live</p>
+      
+      <!-- Bio -->
+      <p id="display-bio" class="text-xs sm:text-sm text-slate-300 max-w-xs leading-relaxed mb-6 font-normal">
+        Streamer, content creator, and gamer. Welcome to my official profile hub!
+      </p>
+
+      <!-- Dynamic Links Container -->
+      <div id="links-container" class="w-full space-y-3.5 mb-2">
+        <!-- Rendered dynamically via JavaScript -->
+      </div>
+
+      <!-- Footer Action -->
+      <div class="mt-8 pt-4 border-t border-white/10 w-full flex items-center justify-between text-[11px] text-slate-400">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i> Custom Profile Active
+        </span>
+        <button onclick="togglePublicPreviewMode()" class="hover:text-purple-300 transition-colors flex items-center gap-1">
+          <i data-lucide="eye" class="w-3 h-3"></i> Toggle Full View
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin Edit Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+      <div class="glass-card w-full max-w-lg rounded-3xl p-6 max-h-[90vh] overflow-y-auto border border-white/20 flex flex-col shadow-2xl relative animate-in fade-in zoom-in duration-200">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+          <div class="flex items-center gap-2">
+            <div class="p-2 bg-purple-500/20 text-purple-400 rounded-xl">
+              <i data-lucide="sliders" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-white">Profile Editor</h2>
+              <p class="text-xs text-slate-400">Modify your links, text, and photos</p>
+            </div>
+          </div>
+          <button onclick="closeAdminPanel()" class="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Editor Input Form -->
+        <div class="space-y-6">
+          
+          <!-- 1. Text Info -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400">1. Basic Info</h3>
+            
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Display Name</label>
+              <input type="text" id="input-name" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm" placeholder="Your Name">
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Handle / Tagline</label>
+              <input type="text" id="input-handle" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm" placeholder="@handle">
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Short Bio</label>
+              <textarea id="input-bio" rows="2" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm" placeholder="Tell visitors about yourself..."></textarea>
+            </div>
+          </div>
+
+          <!-- 2. Visual Theme & Wallpapers -->
+          <div class="space-y-3 pt-3 border-t border-white/10">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400">2. Avatar & Background</h3>
+            
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Avatar Image URL</label>
+              <input type="text" id="input-avatar" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm" placeholder="https://images.unsplash.com/...">
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Custom Background Photo URL</label>
+              <input type="text" id="input-wallpaper" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm" placeholder="https://images.unsplash.com/...">
+            </div>
+
+            <!-- Wallpapers Presets -->
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-2">Preset Aesthetics</label>
+              <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="setPresetWallpaper('cyber')" class="h-12 rounded-xl bg-cover bg-center border border-white/20 hover:border-purple-400 transition-all text-[10px] font-bold flex items-end p-1 text-white shadow" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200');">Cyber</button>
+                <button type="button" onclick="setPresetWallpaper('space')" class="h-12 rounded-xl bg-cover bg-center border border-white/20 hover:border-purple-400 transition-all text-[10px] font-bold flex items-end p-1 text-white shadow" style="background-image: url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=200');">Space</button>
+                <button type="button" onclick="setPresetWallpaper('neon')" class="h-12 rounded-xl bg-cover bg-center border border-white/20 hover:border-purple-400 transition-all text-[10px] font-bold flex items-end p-1 text-white shadow" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=200');">Neon</button>
+                <button type="button" onclick="setPresetWallpaper('minimal')" class="h-12 rounded-xl bg-cover bg-center border border-white/20 hover:border-purple-400 transition-all text-[10px] font-bold flex items-end p-1 text-white shadow" style="background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=200');">Minimal</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Dynamic Links Management -->
+          <div class="space-y-3 pt-3 border-t border-white/10">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-400">3. Manage Social & Gaming Links</h3>
+
+            <div id="editor-links-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Form to Add Link -->
+            <div class="p-3 bg-white/5 border border-white/10 rounded-2xl space-y-3 mt-3">
+              <span class="text-xs font-semibold text-slate-200 block">Add New Platform or Username</span>
+              
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] text-slate-400 mb-1">Platform Icon</label>
+                  <select id="new-link-platform" class="glass-input w-full px-2.5 py-1.5 rounded-lg text-xs bg-slate-900">
+                    <option value="discord">Discord</option>
+                    <option value="steam">Steam</option>
+                    <option value="twitch">Twitch</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="roblox">Roblox</option>
+                    <option value="x">X / Twitter</option>
+                    <option value="custom">Custom Link</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] text-slate-400 mb-1">Title / Label</label>
+                  <input type="text" id="new-link-title" class="glass-input w-full px-2.5 py-1.5 rounded-lg text-xs" placeholder="e.g. My Twitch Stream">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] text-slate-400 mb-1">Target URL or Username</label>
+                <input type="text" id="new-link-value" class="glass-input w-full px-2.5 py-1.5 rounded-lg text-xs" placeholder="e.g. https://twitch.tv or GamerTag#123">
+              </div>
+
+              <button type="button" onclick="addNewLink()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors shadow-lg">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Add to Profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-6 pt-4 border-t border-white/10 flex gap-3">
+          <button type="button" onclick="resetToDefaults()" class="w-1/3 py-2.5 px-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold transition-colors">
+            Reset Demo
+          </button>
+          <button type="button" onclick="saveProfileChanges()" class="w-2/3 py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-900/30">
+            Save & Update Profile
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interactive Deployment & Hosting Modal -->
+    <div id="guide-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+      <div class="glass-card w-full max-w-lg rounded-3xl p-6 max-h-[90vh] overflow-y-auto border border-white/20 flex flex-col shadow-2xl relative animate-in fade-in zoom-in duration-200">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+          <div class="flex items-center gap-2">
+            <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+              <i data-lucide="share-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-bold text-white">How To Host & Share Your Link</h2>
+              <p class="text-xs text-slate-400">Step-by-step guide to put this online for free</p>
+            </div>
+          </div>
+          <button onclick="closeDeployGuide()" class="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex gap-1.5 p-1 bg-black/40 rounded-xl mb-4 text-xs">
+          <button onclick="switchTab('github')" id="tab-github" class="flex-1 py-1.5 rounded-lg font-semibold text-center transition-all bg-purple-600 text-white">GitHub Pages</button>
+          <button onclick="switchTab('netlify')" id="tab-netlify" class="flex-1 py-1.5 rounded-lg font-semibold text-center transition-all text-slate-400 hover:text-white">Netlify / Drop</button>
+          <button onclick="switchTab('vercel')" id="tab-vercel" class="flex-1 py-1.5 rounded-lg font-semibold text-center transition-all text-slate-400 hover:text-white">Vercel</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <!-- Tab 1: GitHub Pages -->
+        <div id="content-github" class="space-y-3 text-xs text-slate-300">
+          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 space-y-2">
+            <span class="font-bold text-white flex items-center gap-1.5 text-xs">
+              <i data-lucide="github" class="w-4 h-4 text-purple-400"></i> Free Public URL with GitHub Pages
+            </span>
+            <ol class="list-decimal list-inside space-y-1.5 text-slate-300 text-xs leading-relaxed">
+              <li>Save this webpage code onto your computer as a file named <code class="bg-black/60 text-purple-300 px-1.5 py-0.5 rounded border border-white/10">index.html</code>.</li>
+              <li>Go to <a href="https://github.com" target="_blank" class="text-purple-400 underline">GitHub.com</a> and create a new public repository named <code class="bg-black/60 text-purple-300 px-1.5 py-0.5 rounded border border-white/10">yourusername.github.io</code>.</li>
+              <li>Upload your <code class="bg-black/60 text-purple-300 px-1.5 py-0.5 rounded border border-white/10">index.html</code> file directly into the repository.</li>
+              <li>Go to <strong>Settings &gt; Pages</strong>, select <code class="bg-black/60 text-emerald-300 px-1 rounded">main branch</code>, and hit <strong>Save</strong>.</li>
+            </ol>
+            <p class="text-[11px] text-emerald-400 font-medium pt-1">
+              ✨ Your site will be live at: <code class="underline">https://yourusername.github.io</code>
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 2: Netlify Drop -->
+        <div id="content-netlify" class="space-y-3 text-xs text-slate-300 hidden">
+          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 space-y-2">
+            <span class="font-bold text-white flex items-center gap-1.5 text-xs">
+              <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Drag-and-Drop Instant Host
+            </span>
+            <ol class="list-decimal list-inside space-y-1.5 text-slate-300 text-xs leading-relaxed">
+              <li>Save this code into a folder on your computer as <code class="bg-black/60 text-amber-300 px-1.5 py-0.5 rounded border border-white/10">index.html</code>.</li>
+              <li>Open <a href="https://app.netlify.com/drop" target="_blank" class="text-amber-400 underline">Netlify Drop</a> in your web browser.</li>
+              <li>Drag and drop the folder containing your file right into the drop zone on the page.</li>
+              <li>Netlify instantly generates a public live link for you to put in your bio!</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Tab 3: Vercel -->
+        <div id="content-vercel" class="space-y-3 text-xs text-slate-300 hidden">
+          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 space-y-2">
+            <span class="font-bold text-white flex items-center gap-1.5 text-xs">
+              <i data-lucide="triangle" class="w-4 h-4 text-cyan-400"></i> Deploying via Vercel
+            </span>
+            <ol class="list-decimal list-inside space-y-1.5 text-slate-300 text-xs leading-relaxed">
+              <li>Push your code to GitHub or create a local project folder.</li>
+              <li>Go to <a href="https://vercel.com" target="_blank" class="text-cyan-400 underline">Vercel.com</a> and click <strong>Add New Project</strong>.</li>
+              <li>Import your GitHub repo or use <code class="bg-black/60 text-cyan-300 px-1.5 py-0.5 rounded border border-white/10">vercel deploy</code> from terminal.</li>
+              <li>Click <strong>Deploy</strong> to receive a fast global HTTPS domain.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="mt-5 pt-3 border-t border-white/10 space-y-2">
+          <button onclick="copyHTMLCode()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-lg">
+            <i data-lucide="code" class="w-4 h-4"></i> Copy Page Source Code
+          </button>
+          <button onclick="closeDeployGuide()" class="w-full py-2 bg-white/10 hover:bg-white/15 text-slate-300 font-semibold rounded-xl text-xs">
+            Done
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-purple-600 text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 border border-white/20">
+    <i data-lucide="check-circle" class="w-4 h-4"></i>
+    <span id="toast-message">Action completed</span>
+  </div>
+
+  <script>
+    // Default Initial Profile Data
+    const DEFAULT_PROFILE = {
+      name: "Alex Vance",
+      handle: "@alexvance_live",
+      bio: "Streamer, competitive FPS gamer, and creator. Welcome to my personal social hub!",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      wallpaper: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop",
+      links: [
+        { id: '1', platform: 'discord', title: 'Discord Community', value: 'https://discord.gg' },
+        { id: '2', platform: 'twitch', title: 'Twitch Channel', value: 'https://twitch.tv' },
+        { id: '3', platform: 'steam', title: 'Steam Gamer Tag', value: 'AlexVance99' },
+        { id: '4', platform: 'youtube', title: 'YouTube Vlogs', value: 'https://youtube.com' }
+      ]
+    };
+
+    const WALLPAPER_PRESETS = {
+      cyber: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop",
+      space: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=1920&auto=format&fit=crop",
+      neon: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1920&auto=format&fit=crop",
+      minimal: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1920&auto=format&fit=crop"
+    };
+
+    const PLATFORM_ICONS = {
+      discord: 'message-square',
+      steam: 'gamepad-2',
+      twitch: 'tv',
+      youtube: 'youtube',
+      instagram: 'instagram',
+      tiktok: 'video',
+      roblox: 'box',
+      x: 'twitter',
+      custom: 'link'
+    };
+
+    let profileState = {};
+    let isCleanPublicView = false;
+
+    // Initialize application
+    function initApp() {
+      const saved = localStorage.getItem('user_link_hub_profile');
+      if (saved) {
+        try {
+          profileState = JSON.parse(saved);
+        } catch (e) {
+          profileState = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+        }
+      } else {
+        profileState = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+      }
+
+      renderProfile();
+      populateEditorFields();
+      lucide.createIcons();
+    }
+
+    /* Render Public Profile UI */
+    function renderProfile() {
+      document.getElementById('display-name').textContent = profileState.name;
+      document.getElementById('display-handle').textContent = profileState.handle;
+      document.getElementById('display-bio').textContent = profileState.bio;
+      document.getElementById('display-avatar').src = profileState.avatar;
+      
+      const bgWallpaper = document.getElementById('bg-wallpaper');
+      bgWallpaper.style.backgroundImage = `url('${profileState.wallpaper}')`;
+
+      const container = document.getElementById('links-container');
+      container.innerHTML = '';
+
+      profileState.links.forEach((item) => {
+        const iconName = PLATFORM_ICONS[item.platform] || 'link';
+        const isUrl = item.value.startsWith('http://') || item.value.startsWith('https://');
+
+        const card = document.createElement('a');
+        card.className = 'glass-button w-full p-3.5 sm:p-4 rounded-2xl text-white font-semibold flex items-center justify-between group text-xs sm:text-sm';
+        card.href = isUrl ? item.value : 'javascript:void(0)';
+        if (isUrl) card.target = '_blank';
+
+        if (!isUrl) {
+          card.onclick = (e) => {
+            e.preventDefault();
+            copyToClipboard(item.value, `Copied "${item.value}" to clipboard!`);
+          };
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 rounded-xl bg-purple-500/20 text-purple-300 group-hover:bg-purple-500 group-hover:text-white transition-all">
+              <i data-lucide="${iconName}" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-white group-hover:text-purple-200 transition-colors">${item.title}</div>
+              <div class="text-[11px] text-slate-400 font-normal truncate max-w-[180px] sm:max-w-[220px]">
+                ${isUrl ? item.value.replace(/^https?:\/\//, '') : item.value}
+              </div>
+            </div>
+          </div>
+          <div class="p-1.5 rounded-lg bg-white/5 text-slate-400 group-hover:text-white group-hover:bg-white/10 transition-all">
+            <i data-lucide="${isUrl ? 'external-link' : 'copy'}" class="w-4 h-4"></i>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    /* Populate Form Inputs inside Admin Editor */
+    function populateEditorFields() {
+      document.getElementById('input-name').value = profileState.name;
+      document.getElementById('input-handle').value = profileState.handle;
+      document.getElementById('input-bio').value = profileState.bio;
+      document.getElementById('input-avatar').value = profileState.avatar;
+      document.getElementById('input-wallpaper').value = profileState.wallpaper;
+
+      renderEditorLinksList();
+    }
+
+    /* Render Links List inside Editor */
+    function renderEditorLinksList() {
+      const container = document.getElementById('editor-links-list');
+      container.innerHTML = '';
+
+      if (profileState.links.length === 0) {
+        container.innerHTML = `<div class="text-center text-xs text-slate-500 py-3">No links added.</div>`;
+        return;
+      }
+
+      profileState.links.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between p-2.5 bg-slate-900/80 border border-white/10 rounded-xl text-xs';
+        div.innerHTML = `
+          <div class="flex items-center gap-2 overflow-hidden pr-2">
+            <i data-lucide="${PLATFORM_ICONS[item.platform] || 'link'}" class="w-4 h-4 text-purple-400 shrink-0"></i>
+            <div class="truncate">
+              <span class="font-bold text-white block truncate">${item.title}</span>
+              <span class="text-[10px] text-slate-400 truncate block">${item.value}</span>
+            </div>
+          </div>
+          <button type="button" onclick="deleteLink(${index})" class="p-1.5 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors shrink-0">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        `;
+        container.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    /* Add Link Handler */
+    function addNewLink() {
+      const platform = document.getElementById('new-link-platform').value;
+      const title = document.getElementById('new-link-title').value.trim();
+      const value = document.getElementById('new-link-value').value.trim();
+
+      if (!title || !value) {
+        showToast('Please fill in title and link/username');
+        return;
+      }
+
+      profileState.links.push({
+        id: Date.now().toString(),
+        platform,
+        title,
+        value
+      });
+
+      document.getElementById('new-link-title').value = '';
+      document.getElementById('new-link-value').value = '';
+
+      renderEditorLinksList();
+      showToast('Link added!');
+    }
+
+    /* Delete Link Handler */
+    function deleteLink(index) {
+      profileState.links.splice(index, 1);
+      renderEditorLinksList();
+      showToast('Link deleted');
+    }
+
+    /* Set Wallpaper Preset */
+    function setPresetWallpaper(key) {
+      if (WALLPAPER_PRESETS[key]) {
+        document.getElementById('input-wallpaper').value = WALLPAPER_PRESETS[key];
+        showToast(`Selected ${key} preset`);
+      }
+    }
+
+    /* Save Editor Changes */
+    function saveProfileChanges() {
+      profileState.name = document.getElementById('input-name').value.trim() || "Your Name";
+      profileState.handle = document.getElementById('input-handle').value.trim() || "@handle";
+      profileState.bio = document.getElementById('input-bio').value.trim() || "";
+      profileState.avatar = document.getElementById('input-avatar').value.trim() || DEFAULT_PROFILE.avatar;
+      profileState.wallpaper = document.getElementById('input-wallpaper').value.trim() || DEFAULT_PROFILE.wallpaper;
+
+      localStorage.setItem('user_link_hub_profile', JSON.stringify(profileState));
+      
+      renderProfile();
+      closeAdminPanel();
+      showToast('Profile saved!');
+    }
+
+    /* Reset Demo */
+    function resetToDefaults() {
+      profileState = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
+      localStorage.removeItem('user_link_hub_profile');
+      populateEditorFields();
+      renderProfile();
+      closeAdminPanel();
+      showToast('Reset to demo profile');
+    }
+
+    /* Tab Switching in Deployment Modal */
+    function switchTab(tabKey) {
+      ['github', 'netlify', 'vercel'].forEach(t => {
+        const tabBtn = document.getElementById(`tab-${t}`);
+        const tabContent = document.getElementById(`content-${t}`);
+        if (t === tabKey) {
+          tabBtn.className = "flex-1 py-1.5 rounded-lg font-semibold text-center transition-all bg-purple-600 text-white shadow";
+          tabContent.classList.remove('hidden');
+        } else {
+          tabBtn.className = "flex-1 py-1.5 rounded-lg font-semibold text-center transition-all text-slate-400 hover:text-white";
+          tabContent.classList.add('hidden');
+        }
+      });
+    }
+
+    /* Clean Public View Toggle */
+    function togglePublicPreviewMode() {
+      isCleanPublicView = !isCleanPublicView;
+      const topBar = document.getElementById('top-bar');
+      if (isCleanPublicView) {
+        topBar.classList.add('opacity-0', 'pointer-events-none');
+        showToast('Clean view enabled. Tap top bar area to bring buttons back.');
+      } else {
+        topBar.classList.remove('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    /* Modal Controls */
+    function openAdminPanel() { document.getElementById('admin-modal').classList.remove('hidden'); }
+    function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); }
+    function openDeployGuide() { document.getElementById('guide-modal').classList.remove('hidden'); }
+    function closeDeployGuide() { document.getElementById('guide-modal').classList.add('hidden'); }
+
+    /* Clipboard Copy Function */
+    function copyToClipboard(text, msg) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(msg || 'Copied to clipboard!');
+      } catch (err) {
+        showToast('Failed to copy');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function copyHTMLCode() {
+      copyToClipboard(document.documentElement.outerHTML, 'Full HTML code copied to clipboard!');
+    }
+
+    /* Toast Helper */
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Unhide top bar if clicked during clean view
+    document.addEventListener('click', (e) => {
+      if (isCleanPublicView && e.clientY < 60) {
+        togglePublicPreviewMode();
+      }
+    });
+
+    window.onload = function() {
+      initApp();
+    };
+  </script>
+</body>
+</html>
